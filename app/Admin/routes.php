@@ -15,4 +15,10 @@ Route::group([
     //仓库资源路由
     $router->resource('warehouses', WarehousesController::class);
 
+    //品牌资源路由
+    $router->resource('brands', BrandsController::class);
+
+    //产品资源路由
+    $router->resource('products', ProductsController::class);
+
 });
