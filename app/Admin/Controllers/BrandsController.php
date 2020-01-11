@@ -7,6 +7,9 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use function foo\func;
+use Illuminate\Support\Facades\Route;
+use Encore\Admin\Widgets\Table;
 
 class BrandsController extends AdminController
 {
@@ -29,7 +32,14 @@ class BrandsController extends AdminController
         $grid->model()->orderBy('sort');
         $grid->column('sort', __('Sort'))->editable();
         $grid->column('brand_number', __('Brand number'));
-        $grid->column('brand_name', __('Brand name'));
+        $grid->column('brand_name', __('Brand name'))->label()
+            ->expand(function (){
+                $products = $this->products()->get()->map(function ($product){
+                    return $product->only(['product_number', 'product_name']);
+                });
+
+                return new Table(['货品编码', '货品名称'], $products->toArray());
+            });
         $grid->column('enable', __('Enable'))
             ->display(function ($enable){
                 return $enable ? '启用' : '暂停';
@@ -50,6 +60,8 @@ class BrandsController extends AdminController
         $grid->actions(function($actions){
             $actions->disableDelete();
         });
+
+        $grid->enableHotKeys();
 
         return $grid;
     }
@@ -82,10 +94,20 @@ class BrandsController extends AdminController
     {
         $form = new Form(new Brand());
 
-        $form->number('sort', __('Sort'));
-        $form->text('brand_number', __('Brand number'));
-        $form->text('brand_name', __('Brand name'));
-        $form->switch('enable', __('Enable'))->default(1);
+        $form->number('sort', __('Sort'))->min(1);
+        $form->text('brand_number', __('Brand number'))
+            ->creationRules(['required', 'max:30' ,'unique:brands'])
+            ->updateRules(['required', 'max:30']);
+        $form->text('brand_name', __('Brand name'))->rules('required"|max:40');
+        $form->switch('enable', __('Enable'))->default(true);
+
+        $form->footer(function ($footer){
+            $footer->disableViewCheck();
+            $footer->disableEditingCheck();
+            $footer->disableCreatingCheck();
+        });
+
+
 
         return $form;
     }

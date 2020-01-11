@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Brand;
 use App\Models\Product;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -29,8 +30,8 @@ class ProductsController extends AdminController
         $grid->column('product_number', __('Product number'));
         $grid->column('product_name', __('Product name'));
         $grid->column('short_name', __('Short name'));
+        $grid->column('brand.brand_name', __('Brand name'));
         $grid->column('category', __('Category'));
-        $grid->column('brand_id', __('Brand id'));
         $grid->column('specification', __('Specification'));
         $grid->column('country', __('Country'));
         $grid->column('unit', __('Unit'));
@@ -88,7 +89,7 @@ class ProductsController extends AdminController
         $form->text('product_name', __('Product name'));
         $form->text('short_name', __('Short name'));
         $form->text('category', __('Category'));
-        $form->text('brand_id', __('Brand id'));
+        $form->select('brand_id', __('Brand id'))->options(Brand::getBrands());
         $form->text('specification', __('Specification'));
         $form->text('country', __('Country'));
         $form->text('unit', __('Unit'));

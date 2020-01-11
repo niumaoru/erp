@@ -17,4 +17,8 @@ class Brand extends Model
     public function products(){
         return $this->hasMany(Product::class);
     }
+
+    public static function getBrands(){
+        return self::where('enable',true)->orderBy('sort')->pluck('brand_name', 'id')->toArray();
+    }
 }
