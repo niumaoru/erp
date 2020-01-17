@@ -2,23 +2,21 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Brand;
+use App\Models\Platform;
+use App\Models\Shop;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use function foo\func;
-use Illuminate\Support\Facades\Route;
-use Encore\Admin\Widgets\Table;
 
-class BrandsController extends AdminController
+class ShopsController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = '品牌';
+    protected $title = '店铺';
 
     /**
      * Make a grid builder.
@@ -27,41 +25,34 @@ class BrandsController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new Brand());
+        $grid = new Grid(new Shop());
 
         $grid->model()->orderBy('sort');
         $grid->column('sort', __('Sort'))->editable();
-        $grid->column('brand_number', __('Brand number'));
-        $grid->column('brand_name', __('Brand name'))->label()
-            ->expand(function ($model){
-                $products = $model->products()->get()->map(function ($product){
-                    return $product->only(['product_number', 'product_name']);
-                });
-
-                return new Table([__('Brand number'), __('Brand name')], $products->toArray());
-            });
+        $grid->column('shop_number', __('Shop number'));
+        $grid->column('shop_name', __('Shop name'));
+        $grid->column('platform.platform_name', __('Platform id'));
         $grid->column('enable', __('Enable'))
             ->display(function ($enable){
-                return $enable ? '启用' : '暂停';
+                return $enable ? '启用' : '停用';
             });
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 
         $grid->filter(function ($filter){
             $filter->disableIdFilter();
-            $filter->equal('brand_number', __('Brand number'));
-            $filter->like('brand_name', __('Brand name'));
+            $filter->equal('shop_number', __('Shop number'));
+            $filter->like('shop_name', __('Shop name'));
         });
 
         $grid->paginate(10);
 
         $grid->disableRowSelector();
 
-        $grid->actions(function($actions){
+        $grid->actions(function ($actions){
+            $actions->disableView();
             $actions->disableDelete();
         });
-
-        $grid->enableHotKeys();
 
         return $grid;
     }
@@ -74,10 +65,13 @@ class BrandsController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Brand::findOrFail($id));
+        $show = new Show(Shop::findOrFail($id));
 
-        $show->field('brand_number', __('Brand number'));
-        $show->field('brand_name', __('Brand name'));
+        $show->field('id', __('Id'));
+        $show->field('sort', __('Sort'));
+        $show->field('shop_number', __('Shop number'));
+        $show->field('shop_name', __('Shop name'));
+        $show->field('platform_id', __('Platform id'));
         $show->field('enable', __('Enable'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
@@ -92,22 +86,21 @@ class BrandsController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new Brand());
+        $form = new Form(new Shop());
 
         $form->number('sort', __('Sort'))->min(1);
-        $form->text('brand_number', __('Brand number'))
-            ->creationRules(['required', 'max:30' ,'unique:brands'])
+        $form->text('shop_number', __('Shop number'))
+            ->creationRules(['required', 'max:30', 'unique:shops'])
             ->updateRules(['required', 'max:30']);
-        $form->text('brand_name', __('Brand name'))->rules('required|max:40');
+        $form->text('shop_name', __('Shop name'))
+            ->creationRules(['required', 'max:30', 'unique:shops'])
+            ->updateRules(['required', 'max:30']);
+        $form->select('platform_id', __('Platform id'))->options(Platform::getPlatforms())->rules('required');
         $form->switch('enable', __('Enable'))->default(true);
 
         $form->footer(function ($footer){
-            //$footer->disableViewCheck();
             $footer->disableEditingCheck();
-            //$footer->disableCreatingCheck();
         });
-
-
 
         return $form;
     }

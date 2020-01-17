@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBrandsTable extends Migration
+class CreateShopsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateBrandsTable extends Migration
      */
     public function up()
     {
-        Schema::create('brands', function (Blueprint $table) {
+        Schema::create('shops', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedSmallInteger('sort');
-            $table->string('brand_number')->unique();
-            $table->string('brand_name')->unique();
+            $table->tinyInteger('sort')->comment('店铺排序，常用店铺优先展示');
+            $table->string('shop_number')->unique();
+            $table->string('shop_name')->unique();
+            $table->bigInteger('platform_id')->unsigned();
+            $table->foreign('platform_id')->references('id')->on('platforms');
             $table->boolean('enable')->default(true);
             $table->timestamps();
         });
@@ -30,6 +32,6 @@ class CreateBrandsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('brands');
+        Schema::dropIfExists('shops');
     }
 }

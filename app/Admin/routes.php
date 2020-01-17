@@ -21,4 +21,9 @@ Route::group([
     //产品资源路由
     $router->resource('products', ProductsController::class);
 
+    //电商平台资源路由
+    $router->resource('platforms', PlatformsController::class);
+
+    //店铺资源路由
+    $router->resource('shops', ShopsController::class);
 });

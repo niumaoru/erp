@@ -16,7 +16,7 @@ class ProductsController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\Product';
+    protected $title = '货品';
 
     /**
      * Make a grid builder.
@@ -99,6 +99,10 @@ class ProductsController extends AdminController
         $form->text('barcode', __('Barcode'));
         $form->text('hs_code', __('Hs code'));
         $form->text('note', __('Note'));
+
+        $form->footer(function ($footer){
+            $footer->disableEditingCheck();
+        });
 
         return $form;
     }

@@ -16,10 +16,11 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('product_number')->unique();
-            $table->string('product_name');
+            $table->string('product_name')->unique();
             $table->string('short_name')->nullable();
             $table->string('category')->nullable();
-            $table->string('brand_id')->references('id')->on('product');
+            $table->bigInteger('brand_id')->unsigned();
+            $table->foreign('brand_id')->references('id')->on('brands');
             $table->string('specification')->nullable()->comment('规格');
             $table->string('country')->comment('原产国');
             $table->string('unit')->nullable()->comment('计量单位');

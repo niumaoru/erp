@@ -18,7 +18,7 @@ class CreateWarehousesTable extends Migration
             $table->tinyInteger('sort');
             $table->tinyInteger('api_type')->comment('接口类型');
             $table->string('warehouse_number')->unique();
-            $table->string('warehouse_name');
+            $table->string('warehouse_name')->unique();
             $table->string('province');
             $table->string('city');
             $table->string('district');
